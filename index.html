@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <title>SlideSplit — 브라우저에서만 도는 .pptx 분해기</title>
+    <meta
+      name="description"
+      content="PPTX 파일을 Markdown과 미디어 파일로 분해합니다. 모든 처리는 브라우저 안에서만 이루어지며 파일이 외부로 전송되지 않습니다."
+    />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%97%82%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <header class="site-header">
+      <h1>SlideSplit</h1>
+      <p class="tagline">
+        <code>.pptx</code> 파일을 Markdown과 미디어로 분해합니다.
+        <strong>모든 처리는 이 브라우저 안에서만</strong> 이루어집니다.
+      </p>
+      <p class="privacy-badge" role="note">
+        <span aria-hidden="true">🔒</span>
+        서버로 전송하지 않습니다 · 네트워크 요청 코드 없음 · CSP <code>connect-src 'none'</code>
+      </p>
+    </header>
+
+    <ol class="stepper" id="stepper" aria-label="진행 단계">
+      <li data-step="1" class="is-current"><span class="num">1</span>업로드</li>
+      <li data-step="2"><span class="num">2</span>옵션</li>
+      <li data-step="3"><span class="num">3</span>실행</li>
+      <li data-step="4"><span class="num">4</span>다운로드</li>
+    </ol>
+
+    <main>
+      <!-- 1. 업로드 -->
+      <section class="card" id="section-upload" aria-labelledby="h-upload">
+        <h2 id="h-upload"><span class="step-tag">1단계</span> 파일 업로드</h2>
+
+        <div id="dropzone" class="dropzone" tabindex="0" role="button"
+             aria-describedby="dropzone-hint">
+          <p class="dropzone-title">여기에 <code>.pptx</code> 파일을 끌어다 놓으세요</p>
+          <p id="dropzone-hint" class="dropzone-hint">
+            또는 클릭해서 파일을 선택합니다 · 여러 개 한꺼번에 가능 ·
+            파일당 최대 <span id="limit-label">200MB</span>
+          </p>
+          <input id="file-input" type="file" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                 multiple hidden />
+        </div>
+
+        <ul id="file-list" class="file-list" aria-live="polite"></ul>
+        <p id="upload-error" class="error-text" role="alert" hidden></p>
+        <div class="row-end">
+          <button id="clear-files" type="button" class="btn btn-ghost" hidden>전체 지우기</button>
+        </div>
+      </section>
+
+      <!-- 2. 옵션 -->
+      <section class="card" id="section-options" aria-labelledby="h-options">
+        <h2 id="h-options"><span class="step-tag">2단계</span> 추출 옵션</h2>
+
+        <fieldset class="opt-group">
+          <legend>추출할 미디어</legend>
+          <label class="check"><input type="checkbox" id="opt-images" checked />
+            <span>이미지 <small>images/ 폴더</small></span></label>
+          <label class="check"><input type="checkbox" id="opt-audio" checked />
+            <span>오디오 <small>audio/ 폴더</small></span></label>
+          <label class="check"><input type="checkbox" id="opt-video" checked />
+            <span>동영상 <small>video/ 폴더</small></span></label>
+        </fieldset>
+
+        <fieldset class="opt-group">
+          <legend>Markdown 출력</legend>
+          <label class="check"><input type="checkbox" id="opt-titles" checked />
+            <span>슬라이드 제목 <small>제목 도형을 <code>##</code> 제목으로. 끄면 «슬라이드 N»</small></span></label>
+          <label class="check"><input type="checkbox" id="opt-separators" checked />
+            <span>구분선 <small>슬라이드 사이에 <code>---</code> 삽입</small></span></label>
+          <label class="check"><input type="checkbox" id="opt-notes" checked />
+            <span>발표자 노트 <small>인용문(<code>&gt;</code>)으로 덧붙임</small></span></label>
+        </fieldset>
+
+        <p class="note">
+          글머리표 목록과 표(<code>a:tbl</code> → Markdown 표)는 항상 유지되며,
+          이미지는 <code>images/…</code> 상대경로로 본문에 삽입됩니다.
+        </p>
+      </section>
+
+      <!-- 3. 실행 -->
+      <section class="card" id="section-run" aria-labelledby="h-run">
+        <h2 id="h-run"><span class="step-tag">3단계</span> 변환 실행</h2>
+        <div class="row">
+          <button id="run" type="button" class="btn btn-primary" disabled>변환 시작</button>
+          <span id="run-summary" class="muted">먼저 파일을 추가해 주세요.</span>
+        </div>
+        <div id="progress-wrap" class="progress-wrap" hidden>
+          <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+               aria-valuenow="0" aria-labelledby="progress-label">
+            <div id="progress-bar" class="progress-bar"></div>
+          </div>
+          <p id="progress-label" class="muted" aria-live="polite">준비 중…</p>
+        </div>
+        <p id="run-error" class="error-text" role="alert" hidden></p>
+      </section>
+
+      <!-- 4. 다운로드 -->
+      <section class="card" id="section-download" aria-labelledby="h-download">
+        <h2 id="h-download"><span class="step-tag">4단계</span> 다운로드</h2>
+        <div class="row">
+          <button id="download" type="button" class="btn btn-primary" disabled>ZIP 내려받기</button>
+          <span id="download-summary" class="muted">변환이 끝나면 여기에서 받을 수 있습니다.</span>
+        </div>
+        <div id="reports" class="reports" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        출력 구조: <code>파일명.md</code> · <code>images/</code> · <code>audio/</code> ·
+        <code>video/</code> — 미디어 파일명은 <code>slide03_01.png</code> 형식이며
+        <code>slideN.xml.rels</code>로 슬라이드에 매핑됩니다.
+      </p>
+      <p class="muted">
+        분석 도구·추적 스크립트가 들어 있지 않습니다. 소스는 전부 이 페이지와 함께 제공됩니다.
+      </p>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
