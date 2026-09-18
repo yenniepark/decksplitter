@@ -16,8 +16,13 @@ npm run build    # dist/ 에 정적 파일 생성
 npm run verify   # 타입검사 + 테스트 + 빌드 + 오프라인 검사
 ```
 
-`dist/` 는 정적 파일 묶음이라 아무 정적 호스팅에나 올리면 되고,
-`file://` 로 열어도 동작합니다(`base: './'`).
+`dist/` 는 정적 파일 묶음이라 아무 정적 호스팅에나 올리면 됩니다.
+`base: './'` 를 쓰기 때문에 `/decksplitter/` 같은 하위 경로에서도 그대로
+동작합니다.
+
+> `dist/index.html` 을 `file://` 로 직접 여는 것은 **동작하지 않습니다.**
+> ES 모듈과 CSS 가 `origin: null` 에서 CORS 로 차단됩니다. 로컬에서 빌드
+> 결과를 확인하려면 `npm run preview` 로 HTTP 서버를 띄우세요.
 
 ## 배포
 
