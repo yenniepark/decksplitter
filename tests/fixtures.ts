@@ -182,6 +182,7 @@ export const IMAGE_REL = `${REL_BASE}/image`;
 export const VIDEO_REL = `${REL_BASE}/video`;
 export const AUDIO_REL = `${REL_BASE}/audio`;
 export const HYPERLINK_REL = `${REL_BASE}/hyperlink`;
+export const SLIDE_REL = `${REL_BASE}/slide`;
 
 export function fakeBytes(size: number, seed = 7): Uint8Array {
   const out = new Uint8Array(size);

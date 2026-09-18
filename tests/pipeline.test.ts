@@ -9,10 +9,12 @@ import {
   AUDIO_REL,
   buildPptx,
   fakeBytes,
+  HYPERLINK_REL,
   IMAGE_REL,
   mediaShape,
   para,
   picShape,
+  SLIDE_REL,
   tableShape,
   textShape,
   toArrayBuffer,
@@ -182,6 +184,42 @@ describe('Markdown 변환', () => {
     assert.match(md, /본문/);
     assert.doesNotMatch(md, /회사 기밀/);
     assert.doesNotMatch(md, /2026-01-01/);
+  });
+
+  it('하이퍼링크를 마크다운 링크로 유지한다', () => {
+    const shapes = `<p:sp><p:nvSpPr><p:cNvPr id="2" name="s"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr/>
+<p:txBody><a:bodyPr/><a:lstStyle/><a:p>
+<a:r><a:rPr><a:hlinkClick r:id="rId9"/></a:rPr><a:t>회사 홈페이지</a:t></a:r>
+</a:p></p:txBody></p:sp>`;
+    const { md } = run({
+      slides: [
+        {
+          shapes,
+          rels: [
+            { id: 'rId9', type: HYPERLINK_REL, target: 'https://example.com/a b', external: true },
+          ],
+        },
+      ],
+    });
+    // 공백은 인코딩하되, 앱이 직접 요청하지는 않는다 (텍스트로만 기록).
+    assert.match(md, /\[회사 홈페이지\]\(https:\/\/example\.com\/a%20b\)/);
+  });
+
+  it('내부 관계(외부 URL 이 아닌) 링크는 링크로 만들지 않는다', () => {
+    const shapes = `<p:sp><p:nvSpPr><p:cNvPr id="2" name="s"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr/>
+<p:txBody><a:bodyPr/><a:lstStyle/><a:p>
+<a:r><a:rPr><a:hlinkClick r:id="rId9"/></a:rPr><a:t>다음 장으로</a:t></a:r>
+</a:p></p:txBody></p:sp>`;
+    const { md } = run({
+      slides: [
+        {
+          shapes,
+          rels: [{ id: 'rId9', type: SLIDE_REL, target: 'slide2.xml' }],
+        },
+      ],
+    });
+    assert.match(md, /다음 장으로/);
+    assert.doesNotMatch(md, /\]\(/);
   });
 
   it('마크다운 특수문자를 이스케이프한다', () => {
