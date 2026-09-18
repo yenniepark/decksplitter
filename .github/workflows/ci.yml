@@ -1,0 +1,40 @@
+name: CI
+
+# PR 과 main 푸시에서 타입검사 · 테스트 · 빌드 · 오프라인 검사를 돌린다.
+# 배포 워크플로와 분리해 둔 이유: PR 단계에서 실패를 먼저 잡기 위해서다.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: 검사
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: 의존성 설치
+        run: npm ci
+
+      - name: 타입 검사
+        run: npm run typecheck
+
+      - name: 테스트
+        run: npm test
+
+      - name: 빌드
+        run: npx vite build
+
+      # 네트워크 API 호출 · 외부 출처 참조 · CSP 누락이 있으면 여기서 실패한다.
+      - name: 오프라인 검사
+        run: npm run check:offline

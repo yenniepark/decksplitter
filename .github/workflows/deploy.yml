@@ -1,0 +1,68 @@
+name: Deploy to GitHub Pages
+
+# main 에 코드가 들어오면 빌드해서 GitHub Pages 에 올린다.
+#
+# 저장소 Settings → Pages → Source 를 "GitHub Actions" 로 바꿔야 동작한다.
+# 주소: https://yenniepark.github.io/slidesplit/
+#
+# vite.config.ts 가 base: './' 라 하위 경로(/slidesplit/)에서도 그대로 동작한다.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 배포가 겹치지 않게 한 번에 하나만 돌린다.
+# 진행 중인 배포는 취소하지 않는다 (중간에 끊기면 사이트가 깨질 수 있다).
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: 빌드
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: 의존성 설치
+        run: npm ci
+
+      # 깨진 코드가 사이트에 올라가지 않도록 배포 전에 전부 검사한다.
+      - name: 타입 검사
+        run: npm run typecheck
+
+      - name: 테스트
+        run: npm test
+
+      - name: 빌드
+        run: npx vite build
+
+      - name: 오프라인 검사
+        run: npm run check:offline
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: 배포
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
