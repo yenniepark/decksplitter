@@ -19,6 +19,27 @@ npm run verify   # 타입검사 + 테스트 + 빌드 + 오프라인 검사
 `dist/` 는 정적 파일 묶음이라 아무 정적 호스팅에나 올리면 되고,
 `file://` 로 열어도 동작합니다(`base: './'`).
 
+## 배포
+
+`main` 에 코드가 들어가면 GitHub Actions 가 빌드해서 GitHub Pages 에 올립니다.
+
+**https://yenniepark.github.io/slidesplit/**
+
+처음 한 번은 저장소 **Settings → Pages → Source** 를 `GitHub Actions` 로 바꿔줘야
+합니다. 그 뒤로는 `main` 에 머지될 때마다 자동으로 갱신됩니다.
+
+배포 전에 타입검사 · 테스트 · 빌드 · 오프라인 검사를 모두 돌리므로, 하나라도
+실패하면 사이트에 올라가지 않습니다.
+
+| 워크플로 | 시점 | 하는 일 |
+| --- | --- | --- |
+| `.github/workflows/ci.yml` | PR, `main` 푸시 | 타입검사 · 테스트 · 빌드 · 오프라인 검사 |
+| `.github/workflows/deploy.yml` | `main` 푸시 | 위 검사 전부 + Pages 배포 |
+
+`base: './'` 로 상대경로를 쓰기 때문에 `/slidesplit/` 같은 하위 경로에서도 그대로
+동작합니다. 다른 호스팅(Netlify · Vercel · 사내 서버)에 올릴 때도 `dist/` 를
+통째로 올리면 됩니다.
+
 ## 만들어지는 결과물
 
 파일 하나를 넣으면 ZIP 최상위가 평평합니다.
@@ -119,6 +140,7 @@ src/
     xml.ts               XML 파서
 scripts/check-offline.mjs  빌드 산출물 오프라인 검사
 tests/                     node:test 기반 테스트 (픽스처를 코드로 생성)
+.github/workflows/         CI (ci.yml) · Pages 배포 (deploy.yml)
 ```
 
 무거운 작업은 전부 Web Worker 에서 돌기 때문에 큰 파일을 넣어도 UI 가 멈추지
