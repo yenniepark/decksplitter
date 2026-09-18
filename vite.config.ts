@@ -31,7 +31,7 @@ const DEV_CSP = PROD_CSP.replace(
 
 function cspPlugin(): Plugin {
   return {
-    name: 'slidesplit-csp',
+    name: 'decksplitter-csp',
     transformIndexHtml: {
       order: 'pre',
       handler(_html, ctx) {

@@ -369,7 +369,7 @@ describe('여러 파일 처리', () => {
       ALL_ON,
       () => {},
     );
-    assert.match(result.zipName, /^slidesplit-\d{8}-\d{4}\.zip$/);
+    assert.match(result.zipName, /^decksplitter-\d{8}-\d{4}\.zip$/);
     assert.deepEqual(Object.keys(unzipSync(result.zip)).sort(), ['A/A.md', 'B/B.md']);
   });
 

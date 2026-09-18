@@ -1,5 +1,5 @@
 {
-  "name": "slidesplit",
+  "name": "decksplitter",
   "version": "1.0.0",
   "private": true,
   "description": "브라우저에서만 동작하는 .pptx 분해기 (서버 전송 없음)",
