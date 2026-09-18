@@ -1,4 +1,4 @@
-# SlideSplit
+# DeckSplitter
 
 `.pptx` 파일을 **Markdown + 미디어 파일**로 분해하는 정적 웹앱입니다.
 모든 처리는 브라우저 안에서만 이루어지며, 파일은 어디로도 전송되지 않습니다.
@@ -23,7 +23,7 @@ npm run verify   # 타입검사 + 테스트 + 빌드 + 오프라인 검사
 
 `main` 에 코드가 들어가면 GitHub Actions 가 빌드해서 GitHub Pages 에 올립니다.
 
-**https://yenniepark.github.io/slidesplit/**
+**https://yenniepark.github.io/decksplitter/**
 
 처음 한 번은 저장소 **Settings → Pages → Source** 를 `GitHub Actions` 로 바꿔줘야
 합니다. 그 뒤로는 `main` 에 머지될 때마다 자동으로 갱신됩니다.
@@ -36,7 +36,7 @@ npm run verify   # 타입검사 + 테스트 + 빌드 + 오프라인 검사
 | `.github/workflows/ci.yml` | PR, `main` 푸시 | 타입검사 · 테스트 · 빌드 · 오프라인 검사 |
 | `.github/workflows/deploy.yml` | `main` 푸시 | 위 검사 전부 + Pages 배포 |
 
-`base: './'` 로 상대경로를 쓰기 때문에 `/slidesplit/` 같은 하위 경로에서도 그대로
+`base: './'` 로 상대경로를 쓰기 때문에 `/decksplitter/` 같은 하위 경로에서도 그대로
 동작합니다. 다른 호스팅(Netlify · Vercel · 사내 서버)에 올릴 때도 `dist/` 를
 통째로 올리면 됩니다.
 

@@ -3,9 +3,9 @@ name: Deploy to GitHub Pages
 # main 에 코드가 들어오면 빌드해서 GitHub Pages 에 올린다.
 #
 # 저장소 Settings → Pages → Source 를 "GitHub Actions" 로 바꿔야 동작한다.
-# 주소: https://yenniepark.github.io/slidesplit/
+# 주소: https://yenniepark.github.io/decksplitter/
 #
-# vite.config.ts 가 base: './' 라 하위 경로(/slidesplit/)에서도 그대로 동작한다.
+# vite.config.ts 가 base: './' 라 하위 경로(/decksplitter/)에서도 그대로 동작한다.
 on:
   push:
     branches: [main]

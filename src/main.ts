@@ -296,7 +296,7 @@ function ensureWorker(): Worker {
 
   const w = new Worker(new URL('./worker/convert.worker.ts', import.meta.url), {
     type: 'module',
-    name: 'slidesplit-convert',
+    name: 'decksplitter-convert',
   });
 
   w.addEventListener('message', (event: MessageEvent<WorkerResponse>) => {

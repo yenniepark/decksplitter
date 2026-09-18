@@ -122,7 +122,7 @@ export function convertAll(
   const zipped = zipSync(zipEntries, { level: 6 });
 
   const zipName = multi
-    ? `slidesplit-${timestamp()}.zip`
+    ? `decksplitter-${timestamp()}.zip`
     : `${sanitizeBaseName(stripExtension(files[0]!.name))}.zip`;
 
   return { zip: zipped, zipName, reports };
